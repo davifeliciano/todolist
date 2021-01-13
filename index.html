@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <link href="./images/align-center.svg" rel="icon">
+    <link href="./style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Abel&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Lista de Tarefas</h1>
+        </header>
+        <main>
+            <section>
+                <input id="taskField" type="text" autofocus placeholder="Digite aqui o que você tem para fazer hoje!">
+                <button id="buttonAdd" onclick="addTask()">Salvar</button>
+            </section>
+            <section id="taskSection">
+                <ul id="taskList">
+                </ul>
+            </section>
+            <section>
+                <button onclick="deleteTasks()">Apagar Itens Selecionados</button>
+                <button onclick="toggleDone()">Marcar Como Concluído</button>
+                <button onclick="deleteAll()">Apagar Tudo</button>
+            </section>
+        </main>
+        <footer>
+
+        </footer>
+    </div>
+    <script src="./script.js"></script>
+</body>
+
+</html>
