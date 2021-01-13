@@ -35,7 +35,8 @@ li.task {
     padding: 10px;
     padding-left: 40px;
     line-height: 24px;
-    height: 24px;
+    min-height: 24px;
+    height: fit-content;
     list-style-type: none;
     border-bottom: 1px solid rgba(128, 128, 128, 0.5);
 }
@@ -63,10 +64,18 @@ li.task[data-done='true'] {
     text-align: center;
 }
 
+.marginBottom {
+    margin-bottom: 4px;
+}
+
 #taskField {
     width: 70%;
     padding: 5px;
+    margin-bottom: 5px;
     display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #taskSection {
@@ -76,4 +85,12 @@ li.task[data-done='true'] {
     overflow-y: scroll;
     border: 1px solid grey;
     background-color: white;
+}
+
+@media screen and (max-width: 500px) {
+    .container {
+        height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+    }
 }
