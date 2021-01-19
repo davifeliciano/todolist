@@ -14,11 +14,11 @@ function setStorage(json) {
     localStorage.setItem('tasks', JSON.stringify(json));
 }
 
-
 /* Set attributes and innerText of a list item given 
    task description and task status (done or not) */
 function newListItem(description, done) {
     let newListItem = document.createElement('li');
+
     newListItem.setAttribute('data-selected', false);
     newListItem.setAttribute('data-done', done);
     newListItem.setAttribute('class', 'task');
@@ -27,6 +27,36 @@ function newListItem(description, done) {
 
     newListItem.addEventListener('click', function () {
         toggleSelect(this);
+    });
+
+    // Adding copy and edit buttons when hovering
+    newListItem.addEventListener('mouseenter', function () {
+        let copyIcon = document.createElement('span');
+        let editIcon = document.createElement('span');
+
+        copyIcon.setAttribute('class', 'taskIcon');
+        copyIcon.innerHTML = '<img src="./images/clipboard.svg">';
+        editIcon.setAttribute('class', 'taskIcon');
+        editIcon.innerHTML = '<img src="./images/edit.svg">';
+
+        this.appendChild(copyIcon);
+        this.appendChild(editIcon);
+
+        copyIcon.addEventListener('click', function (event) {
+            navigator.clipboard.writeText(this.parentElement.innerText);
+            console.log('Copiado para a área de transferência');
+            event.stopPropagation();
+        });
+
+        editIcon.addEventListener('click', function (event) {
+            console.log('Editando elemento');
+            event.stopPropagation();
+        });
+    });
+
+    newListItem.addEventListener('mouseleave', function () {
+        while (this.lastElementChild)
+            this.removeChild(this.lastElementChild);
     });
 }
 
@@ -98,12 +128,13 @@ function deleteTasks() {
 }
 
 function deleteAll() {
-    stored = getStorage();
-    stored.list.length = 0;
-    setStorage(stored);
-    taskList.innerHTML = '';
+    if (window.confirm('Deseja realmente limpar a lista?')) {
+        stored = getStorage();
+        stored.list.length = 0;
+        setStorage(stored);
+        taskList.innerHTML = '';
+    }
 }
-
 
 window.onload = function () {
     taskField = document.getElementById('taskField');
