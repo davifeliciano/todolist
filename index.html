@@ -18,7 +18,7 @@
         </header>
         <main>
             <section>
-                <input id="taskField" type="text" autofocus placeholder="Digite aqui o que você tem para fazer hoje!">
+                <input id="taskField" type="text" autofocus placeholder="Digite aqui o que você tem para fazer hoje">
                 <button id="buttonAdd" onclick="addTask()">Salvar</button>
             </section>
             <section id="taskSection">
@@ -28,13 +28,14 @@
             <section>
                 <button class="marginBottom" onclick="deleteTasks()">Apagar Itens Selecionados</button>
                 <button class="marginBottom" onclick="toggleDone()">Marcar Como Concluído</button>
-                <button class="marginBottom" onclick="deleteAll()">Apagar Tudo</button>
+                <button class="marginBottom" onclick="deleteAll()">Limpar Lista</button>
             </section>
+            <div id="toast">Texto copiado para a área de transferência</div>
         </main>
-        <footer>
-
-        </footer>
     </div>
+    <footer>
+
+    </footer>
     <script src="./script.js"></script>
 </body>
 

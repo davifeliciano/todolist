@@ -39,6 +39,7 @@ li.task {
     height: fit-content;
     list-style-type: none;
     border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+    user-select: none;
 }
 
 li.task[data-selected='false'] {
@@ -62,6 +63,18 @@ li.task[data-done='true'] {
     max-width: 60%;
     height: fit-content;
     text-align: center;
+    padding-bottom: 15px;
+}
+
+.taskIcon {
+    float: right;
+    height: 24px;
+    margin-left: 15px;
+    user-select: none;
+}
+
+.taskIcon:hover {
+    cursor: pointer;
 }
 
 .marginBottom {
@@ -85,6 +98,16 @@ li.task[data-done='true'] {
     overflow-y: scroll;
     border: 1px solid grey;
     background-color: white;
+}
+
+#toast {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-color: black;
+    color: white;
+    max-width: 20%;
+    margin: auto;
+    display: none;
 }
 
 @media screen and (max-width: 500px) {
