@@ -14,6 +14,20 @@ function setStorage(json) {
     localStorage.setItem('tasks', JSON.stringify(json));
 }
 
+/* Save the list item in memory after edit
+   The argument must be some child of taskList
+   This function should be called whenever some
+   item in the taskList is changed */
+function saveTask(task) {
+    let index = 0;
+    let child = task;
+    while ((child = child.previusSibling) != null)
+        index++;
+    stored = getStorage();
+    stored.list[index].description = task.innerText;
+    setStorage(stored);
+}
+
 /* Set attributes and innerText of a list item given 
    task description and task status (done or not) */
 function newListItem(description, done) {
@@ -42,14 +56,46 @@ function newListItem(description, done) {
         this.appendChild(copyIcon);
         this.appendChild(editIcon);
 
-        copyIcon.addEventListener('click', function (event) {
-            navigator.clipboard.writeText(this.parentElement.innerText);
-            console.log('Copiado para a área de transferência');
+        // Toggle edit when edit icon is clicked
+        editIcon.addEventListener('click', function (event) {
+            if (this.parentElement.getAttribute('contenteditable') != 'true') {
+                this.parentElement.setAttribute('contenteditable', 'true');
+                this.parentElement.focus();
+            } else {
+                saveTask(this.parentElement);
+                this.parentElement.setAttribute('contenteditable', 'false');
+            }
             event.stopPropagation();
         });
 
-        editIcon.addEventListener('click', function (event) {
-            console.log('Editando elemento');
+        // Toggle edit when enter is pressed
+        newListItem.addEventListener('keydown', function (event) {
+            if (this.getAttribute('contenteditable') == 'true') {
+                if (event.key !== 'Enter') return;
+                saveTask(this);
+                this.setAttribute('contenteditable', 'false');
+                taskField.focus();
+            }
+            event.preventDefault();
+        });
+
+        // Disable edit when user click out of edited task
+        window.addEventListener('click', function (event) {
+            if (newListItem.getAttribute('contenteditable') == 'true') {
+                let target = event.target;
+                do {
+                    if (target == newListItem) return;
+                    target = target.parentNode;
+                } while (target);
+                saveTask(newListItem);
+                newListItem.setAttribute('contenteditable', 'false');
+                taskField.focus();
+            }
+        });
+
+        copyIcon.addEventListener('click', function (event) {
+            navigator.clipboard.writeText(this.parentElement.innerText);
+            console.log('Copiado para a área de transferência');
             event.stopPropagation();
         });
     });
@@ -82,17 +128,17 @@ function addTask() {
         index %= placeholders.length;
         taskField.setAttribute('placeholder', placeholders[index]);
         index++;
-        console.log(index);
     }
     taskField.value = '';
 }
 
 function toggleSelect(task) {
-    if (task.getAttribute('data-selected') == 'true')
-        task.setAttribute('data-selected', false);
-    else
-        task.setAttribute('data-selected', true);
-
+    if (task.getAttribute('contenteditable') != 'true') {
+        if (task.getAttribute('data-selected') == 'true')
+            task.setAttribute('data-selected', false);
+        else
+            task.setAttribute('data-selected', true);
+    }
 }
 
 function toggleDone() {
@@ -151,8 +197,10 @@ window.onload = function () {
     // Unselect every task if Esc is pressed
     window.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') return;
-        for (let task of taskList.children)
+        for (let task of taskList.children) {
             task.setAttribute('data-selected', 'false');
+            task.setAttribute('contenteditable', 'false');
+        }
     });
 
     // Unselect every task if click outside task window
