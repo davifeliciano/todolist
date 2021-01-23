@@ -29,7 +29,8 @@ function saveTask(task) {
 }
 
 /* Set attributes and innerText of a list item given 
-   task description and task status (done or not) */
+   task description and task status (done or not)
+   Create all event listeners the new task needs  */
 function newListItem(description, done) {
     let newListItem = document.createElement('li');
 
@@ -45,12 +46,14 @@ function newListItem(description, done) {
 
     // Adding copy and edit buttons when hovering
     newListItem.addEventListener('mouseenter', function () {
-        let copyIcon = document.createElement('span');
-        let editIcon = document.createElement('span');
+        let copyIcon = document.createElement('button');
+        let editIcon = document.createElement('button');
 
         copyIcon.setAttribute('class', 'taskIcon');
+        copyIcon.setAttribute('contenteditable', 'false');
         copyIcon.innerHTML = '<img src="./images/clipboard.svg">';
         editIcon.setAttribute('class', 'taskIcon');
+        editIcon.setAttribute('contenteditable', 'false');
         editIcon.innerHTML = '<img src="./images/edit.svg">';
 
         this.appendChild(copyIcon);
@@ -96,6 +99,20 @@ function newListItem(description, done) {
         copyIcon.addEventListener('click', function (event) {
             navigator.clipboard.writeText(this.parentElement.innerText);
             console.log('Copiado para a área de transferência');
+            let toast = document.getElementById('toast');
+            let opacity = 1.0;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                let interval = setInterval(() => {
+                    opacity -= 0.01
+                    toast.style.opacity = opacity.toString();
+                }, 30);
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.opacity = 'unset';
+                    clearInterval(interval);
+                }, 3000);
+            }, 3000);
             event.stopPropagation();
         });
     });
