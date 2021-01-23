@@ -79,6 +79,7 @@ li.task[data-done='true'] {
     height: 24px;
     margin-left: 15px;
     user-select: none;
+    display: none;
 }
 
 .taskIcon:hover {
@@ -114,12 +115,12 @@ li.task[data-done='true'] {
     border-radius: 4px;
     background-color: black;
     color: white;
-    max-width: 20%;
     position: absolute;
     bottom: 1cm;
     left: 50%;
     transform: translateX(-50%);
     margin: auto;
+    padding: 3px;
     text-align: center;
     display: none;
     user-select: none;

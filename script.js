@@ -2,6 +2,7 @@ let taskField;
 let buttonAdd;
 let taskList;
 let stored;
+let touchDevice = (navigator.maxTouchPoints || 'ontouchstart' in document.documentElement);
 
 // Return the parsed JSON of tasks stored is local storage
 function getStorage() {
@@ -40,87 +41,102 @@ function newListItem(description, done) {
     newListItem.innerText = description;
     taskList.appendChild(newListItem);
 
+    let copyIcon = document.createElement('button');
+    let editIcon = document.createElement('button');
+
+    copyIcon.setAttribute('class', 'taskIcon');
+    copyIcon.setAttribute('contenteditable', 'false');
+    copyIcon.innerHTML = '<img src="./images/clipboard.svg">';
+    editIcon.setAttribute('class', 'taskIcon');
+    editIcon.setAttribute('contenteditable', 'false');
+    editIcon.innerHTML = '<img src="./images/edit.svg">';
+
+    newListItem.appendChild(copyIcon);
+    newListItem.appendChild(editIcon);
+
     newListItem.addEventListener('click', function () {
         toggleSelect(this);
     });
 
-    // Adding copy and edit buttons when hovering
-    newListItem.addEventListener('mouseenter', function () {
-        let copyIcon = document.createElement('button');
-        let editIcon = document.createElement('button');
+    // Toggle edit when edit icon is clicked
+    editIcon.addEventListener('click', function (event) {
+        if (this.parentElement.getAttribute('contenteditable') != 'true') {
+            this.parentElement.setAttribute('contenteditable', 'true');
+            let range = document.createRange();
+            range.selectNodeContents(this.parentElement);
+            let selection = getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            saveTask(this.parentElement);
+            this.parentElement.setAttribute('contenteditable', 'false');
+        }
+        event.stopPropagation();
+    });
 
-        copyIcon.setAttribute('class', 'taskIcon');
-        copyIcon.setAttribute('contenteditable', 'false');
-        copyIcon.innerHTML = '<img src="./images/clipboard.svg">';
-        editIcon.setAttribute('class', 'taskIcon');
-        editIcon.setAttribute('contenteditable', 'false');
-        editIcon.innerHTML = '<img src="./images/edit.svg">';
+    // Save edit when enter is pressed
+    newListItem.addEventListener('keydown', function (event) {
+        if (this.getAttribute('contenteditable') == 'true') {
+            if (event.key !== 'Enter') return;
+            saveTask(this);
+            this.setAttribute('contenteditable', 'false');
+            taskField.focus();
+        }
+        event.preventDefault();
+    });
 
-        this.appendChild(copyIcon);
-        this.appendChild(editIcon);
+    // Save edit when user click out of edited task
+    window.addEventListener('click', function (event) {
+        if (newListItem.getAttribute('contenteditable') == 'true') {
+            let target = event.target;
+            do {
+                if (target == newListItem) return;
+                target = target.parentNode;
+            } while (target);
+            saveTask(newListItem);
+            newListItem.setAttribute('contenteditable', 'false');
+            taskField.focus();
+        }
+    });
 
-        // Toggle edit when edit icon is clicked
-        editIcon.addEventListener('click', function (event) {
-            if (this.parentElement.getAttribute('contenteditable') != 'true') {
-                this.parentElement.setAttribute('contenteditable', 'true');
-                this.parentElement.focus();
-            } else {
-                saveTask(this.parentElement);
-                this.parentElement.setAttribute('contenteditable', 'false');
-            }
-            event.stopPropagation();
-        });
-
-        // Toggle edit when enter is pressed
-        newListItem.addEventListener('keydown', function (event) {
-            if (this.getAttribute('contenteditable') == 'true') {
-                if (event.key !== 'Enter') return;
-                saveTask(this);
-                this.setAttribute('contenteditable', 'false');
-                taskField.focus();
-            }
-            event.preventDefault();
-        });
-
-        // Disable edit when user click out of edited task
-        window.addEventListener('click', function (event) {
-            if (newListItem.getAttribute('contenteditable') == 'true') {
-                let target = event.target;
-                do {
-                    if (target == newListItem) return;
-                    target = target.parentNode;
-                } while (target);
-                saveTask(newListItem);
-                newListItem.setAttribute('contenteditable', 'false');
-                taskField.focus();
-            }
-        });
-
-        copyIcon.addEventListener('click', function (event) {
-            navigator.clipboard.writeText(this.parentElement.innerText);
-            console.log('Copiado para a área de transferência');
-            let toast = document.getElementById('toast');
-            let opacity = 1.0;
-            toast.style.display = 'block';
+    // Copy task to clipboard when copy icon is pressed
+    copyIcon.addEventListener('click', function (event) {
+        navigator.clipboard.writeText(this.parentElement.innerText);
+        let toast = document.getElementById('toast');
+        let opacity = 1.0;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            let interval = setInterval(() => {
+                opacity -= 0.01
+                toast.style.opacity = opacity.toString();
+            }, 30);
             setTimeout(() => {
-                let interval = setInterval(() => {
-                    opacity -= 0.01
-                    toast.style.opacity = opacity.toString();
-                }, 30);
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                    toast.style.opacity = 'unset';
-                    clearInterval(interval);
-                }, 3000);
+                toast.style.display = 'none';
+                toast.style.opacity = 'unset';
+                clearInterval(interval);
             }, 3000);
-            event.stopPropagation();
-        });
+        }, 3000);
+        event.stopPropagation();
     });
 
-    newListItem.addEventListener('mouseleave', function () {
-        while (this.lastElementChild)
-            this.removeChild(this.lastElementChild);
-    });
+    if (touchDevice) {
+        // Show all icons
+        let icons = document.getElementsByClassName('taskIcon');
+        for (let icon of icons)
+            icon.style.display = 'inline-block';
+    } else {
+        // Displaying copy and edit buttons when hovering task
+        newListItem.addEventListener('mouseenter', function () {
+            for (let button of this.children)
+                button.style.display = 'unset';
+        });
+
+        // Hidding when not
+        newListItem.addEventListener('mouseleave', function () {
+            for (let button of this.children)
+                button.style.display = 'none';
+        });
+    }
 }
 
 let index = 0;
