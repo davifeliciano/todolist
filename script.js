@@ -20,10 +20,8 @@ function setStorage(json) {
    This function should be called whenever some
    item in the taskList is changed */
 function saveTask(task) {
-    let index = 0;
     let child = task;
-    while ((child = child.previusSibling) != null)
-        index++;
+    let index = Array.from(child.parentNode.children).indexOf(child);
     stored = getStorage();
     stored.list[index].description = task.innerText;
     setStorage(stored);
