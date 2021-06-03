@@ -16,15 +16,36 @@ function setStorage(json) {
 }
 
 /* Save the list item in memory after edit
-   The argument must be some child of taskList
+   The argument must be the div, first child a taskList item
    This function should be called whenever some
    item in the taskList is changed */
-function saveTask(task) {
-    let child = task;
-    let index = Array.from(child.parentNode.children).indexOf(child);
+function saveTask(div) {
+    let index = Array.from(taskList.children).indexOf(div.parentNode);
     stored = getStorage();
-    stored.list[index].description = task.innerText;
-    setStorage(stored);
+
+    if (div.innerText.trim()) {
+        stored.list[index].description = div.innerText;
+        setStorage(stored);
+    } else {
+        div.innerText = stored.list[index].description;
+    }
+}
+
+// Select innerText of a given node
+function selectText(node) {
+    if (document.body.createTextRange) {
+        const range = document.body.createTextRange();
+        range.moveToElementText(node);
+        range.select();
+    } else if (window.getSelection) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    } else {
+        console.warn("Could not select text in node: Unsupported browser.");
+    }
 }
 
 /* Set attributes and innerText of a list item given 
@@ -36,19 +57,23 @@ function newListItem(description, done) {
     newListItem.setAttribute('data-selected', false);
     newListItem.setAttribute('data-done', done);
     newListItem.setAttribute('class', 'task');
-    newListItem.innerText = description;
     taskList.appendChild(newListItem);
 
+    let taskDiv = document.createElement('div');
     let copyIcon = document.createElement('button');
     let editIcon = document.createElement('button');
 
+    taskDiv.setAttribute('class', 'taskText');
+    taskDiv.setAttribute('contenteditable', 'false');
+    taskDiv.innerText = description;
+
     copyIcon.setAttribute('class', 'taskIcon');
-    copyIcon.setAttribute('contenteditable', 'false');
     copyIcon.innerHTML = '<img src="./images/clipboard.svg">';
+
     editIcon.setAttribute('class', 'taskIcon');
-    editIcon.setAttribute('contenteditable', 'false');
     editIcon.innerHTML = '<img src="./images/edit.svg">';
 
+    newListItem.appendChild(taskDiv);
     newListItem.appendChild(copyIcon);
     newListItem.appendChild(editIcon);
 
@@ -58,22 +83,23 @@ function newListItem(description, done) {
 
     // Toggle edit when edit icon is clicked
     editIcon.addEventListener('click', function (event) {
-        if (this.parentElement.getAttribute('contenteditable') != 'true') {
-            this.parentElement.setAttribute('contenteditable', 'true');
-            let range = document.createRange();
-            range.selectNodeContents(this.parentElement);
-            let selection = getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
+        if (taskDiv.getAttribute('contenteditable') != 'true') {
+            taskDiv.setAttribute('contenteditable', 'true');
+            selectText(taskDiv);
         } else {
-            saveTask(this.parentElement);
-            this.parentElement.setAttribute('contenteditable', 'false');
+            saveTask(taskDiv);
+            taskDiv.setAttribute('contenteditable', 'false');
         }
         event.stopPropagation();
     });
 
+    taskDiv.addEventListener('click', function (event) {
+        if (this.getAttribute('contenteditable') == 'true')
+            event.stopPropagation();
+    });
+
     // Save edit when enter is pressed
-    newListItem.addEventListener('keydown', function (event) {
+    taskDiv.addEventListener('keydown', function (event) {
         if (this.getAttribute('contenteditable') == 'true') {
             if (event.key !== 'Enter') return;
             saveTask(this);
@@ -85,21 +111,21 @@ function newListItem(description, done) {
 
     // Save edit when user click out of edited task
     window.addEventListener('click', function (event) {
-        if (newListItem.getAttribute('contenteditable') == 'true') {
+        if (taskDiv.getAttribute('contenteditable') == 'true') {
             let target = event.target;
             do {
-                if (target == newListItem) return;
+                if (target == taskDiv) return;
                 target = target.parentNode;
             } while (target);
-            saveTask(newListItem);
-            newListItem.setAttribute('contenteditable', 'false');
+            saveTask(taskDiv);
+            taskDiv.setAttribute('contenteditable', 'false');
             taskField.focus();
         }
     });
 
     // Copy task to clipboard when copy icon is pressed
     copyIcon.addEventListener('click', function (event) {
-        navigator.clipboard.writeText(this.parentElement.innerText);
+        navigator.clipboard.writeText(taskDiv.innerText);
         let toast = document.getElementById('toast');
         let opacity = 1.0;
         toast.style.display = 'block';
@@ -126,13 +152,15 @@ function newListItem(description, done) {
         // Displaying copy and edit buttons when hovering task
         newListItem.addEventListener('mouseenter', function () {
             for (let button of this.children)
-                button.style.display = 'unset';
+                if (button.tagName == 'BUTTON')
+                    button.style.display = 'unset';
         });
 
         // Hidding when not
         newListItem.addEventListener('mouseleave', function () {
             for (let button of this.children)
-                button.style.display = 'none';
+                if (button.tagName == 'BUTTON')
+                    button.style.display = 'none';
         });
     }
 }
