@@ -69,6 +69,11 @@ li.task[data-done='true'] {
     padding-bottom: 15px;
 }
 
+.taskText {
+    display: inline-block;
+    width: 80%;
+}
+
 .taskIcon {
     border: none;
     height: fit-content;
