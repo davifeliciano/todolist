@@ -28,7 +28,6 @@ input {
 }
 
 button {
-    padding: 5px;
     font-family: 'Abel', sans-serif;
     font-size: 1rem;
 }
@@ -45,17 +44,16 @@ li.task {
     user-select: none;
 }
 
-li.task[data-selected='false'] {
-    background-color: white;
-}
-
-li.task[data-selected='true'] {
-    background-color: #fd9300;
-}
-
-li.task[data-done='true'] {
+li.task[data-done='true'][data-selected='false'] {
     background-repeat: no-repeat;
     background-image: url(./images/check.svg);
+    background-position-y: center;
+    background-position-x: 10px;
+}
+
+li.task[data-done='true'][data-selected='true'] {
+    background-repeat: no-repeat;
+    background-image: url(./images/check_white.svg);
     background-position-y: center;
     background-position-x: 10px;
 }
@@ -71,7 +69,12 @@ li.task[data-done='true'] {
 
 .taskText {
     display: inline-block;
-    width: 80%;
+    width: 65%;
+    user-select: none;
+}
+
+.taskText:focus {
+    outline: none;
 }
 
 .taskIcon {
@@ -92,14 +95,14 @@ li.task[data-done='true'] {
 }
 
 .marginBottom {
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+}
+
+.marginRight {
+    margin-right: 8px;
 }
 
 #taskField {
-    width: 70%;
-    padding: 5px;
-    margin-bottom: 5px;
-    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,13 +116,10 @@ li.task[data-done='true'] {
     border: 1px solid grey;
     background-color: white;
     position: relative;
+    border-radius: 5px;
 }
 
 #toast {
-    border: 2px solid transparent;
-    border-radius: 4px;
-    background-color: black;
-    color: white;
     position: absolute;
     bottom: 1cm;
     left: 50%;
@@ -131,10 +131,29 @@ li.task[data-done='true'] {
     user-select: none;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 660px) {
     .container {
         height: 100vh;
         width: 100vw;
         max-width: 100vw;
     }
+}
+
+/* New scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

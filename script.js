@@ -56,7 +56,7 @@ function newListItem(description, done) {
 
     newListItem.setAttribute('data-selected', false);
     newListItem.setAttribute('data-done', done);
-    newListItem.setAttribute('class', 'task');
+    newListItem.setAttribute('class', 'task list-group-item');
     taskList.appendChild(newListItem);
 
     let taskDiv = document.createElement('div');
@@ -191,19 +191,34 @@ function addTask() {
     taskField.value = '';
 }
 
+function select(task) {
+    task.setAttribute('data-selected', true);
+    task.setAttribute('class', 'task list-group-item active');
+    for (let button of task.children)
+        if (button.tagName == 'BUTTON')
+            button.firstChild.style.filter = 'invert(1)';
+}
+
+function unselect(task) {
+    task.setAttribute('data-selected', false);
+    task.setAttribute('class', 'task list-group-item');
+    for (let button of task.children)
+        if (button.tagName == 'BUTTON')
+            button.firstChild.style.filter = 'invert(0)';
+}
+
 function toggleSelect(task) {
     if (task.getAttribute('contenteditable') != 'true') {
         if (task.getAttribute('data-selected') == 'true')
-            task.setAttribute('data-selected', false);
+            unselect(task);
         else
-            task.setAttribute('data-selected', true);
+            select(task);
     }
 }
 
 function toggleDone() {
     let tasks = taskList.children;
     for (let index = 0; index < tasks.length; index++) {
-        console.log(tasks[index]);
         if (tasks[index].getAttribute('data-selected') == 'true') {
             stored = getStorage();
             let done;
@@ -257,7 +272,7 @@ window.onload = function () {
     window.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') return;
         for (let task of taskList.children) {
-            task.setAttribute('data-selected', 'false');
+            unselect(task);
             task.setAttribute('contenteditable', 'false');
         }
     });
@@ -270,7 +285,7 @@ window.onload = function () {
             target = target.parentNode;
         } while (target);
         for (let task of taskList.children)
-            task.setAttribute('data-selected', 'false');
+            unselect(task);
     });
 
     // Read tasks stored in local storage and update html
