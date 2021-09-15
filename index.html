@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tarefas</title>
     <link href="./images/align-center.svg" rel="icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link href="./style.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Abel&display=swap" rel="stylesheet">
@@ -18,18 +20,27 @@
         </header>
         <main>
             <section>
-                <input id="taskField" type="text" autofocus placeholder="Digite aqui o que você tem para fazer hoje">
-                <button id="buttonAdd" onclick="addTask()">Salvar</button>
+                <form class="row">
+                    <div class="col">
+                        <input id="taskField" class="form-control" type="text" autofocus
+                            placeholder="Digite aqui o que você tem para fazer hoje">
+                    </div>
+                    <div class="col-auto">
+                        <button id="buttonAdd" class="btn btn-primary" onclick="addTask()">Salvar</button>
+                    </div>
+                </form>
             </section>
             <section id="taskSection">
                 <ul id="taskList">
                 </ul>
-                <div id="toast">Texto copiado para a área de transferência</div>
+                <div id="toast" class="alert alert-primary">Texto copiado para a área de transferência</div>
             </section>
             <section>
-                <button class="marginBottom" onclick="deleteTasks()">Apagar Itens Selecionados</button>
-                <button class="marginBottom" onclick="toggleDone()">Marcar Como Concluído</button>
-                <button class="marginBottom" onclick="deleteAll()">Limpar Lista</button>
+                <button class="marginBottom marginRight btn btn-primary" onclick="deleteTasks()">Apagar Itens
+                    Selecionados</button>
+                <button class="marginBottom marginRight btn btn-primary" onclick="toggleDone()">Marcar Como
+                    Concluído</button>
+                <button class="marginBottom marginRight btn btn-primary" onclick="deleteAll()">Limpar Lista</button>
             </section>
         </main>
     </div>

@@ -28,7 +28,6 @@ input {
 }
 
 button {
-    padding: 5px;
     font-family: 'Abel', sans-serif;
     font-size: 1rem;
 }
@@ -71,7 +70,12 @@ li.task[data-done='true'] {
 
 .taskText {
     display: inline-block;
-    width: 80%;
+    width: 65%;
+    user-select: none;
+}
+
+.taskText:focus {
+    outline: none;
 }
 
 .taskIcon {
@@ -92,14 +96,14 @@ li.task[data-done='true'] {
 }
 
 .marginBottom {
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+}
+
+.marginRight {
+    margin-right: 8px;
 }
 
 #taskField {
-    width: 70%;
-    padding: 5px;
-    margin-bottom: 5px;
-    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,13 +117,10 @@ li.task[data-done='true'] {
     border: 1px solid grey;
     background-color: white;
     position: relative;
+    border-radius: 5px;
 }
 
 #toast {
-    border: 2px solid transparent;
-    border-radius: 4px;
-    background-color: black;
-    color: white;
     position: absolute;
     bottom: 1cm;
     left: 50%;
